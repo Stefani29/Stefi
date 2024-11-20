@@ -1,0 +1,192 @@
+# LAB 3 SO BFS
+import copy
+from collections import deque
+N = 4
+def toggle(element):
+    if element == 1:
+        element = 0
+    else:
+        element = 1
+    return element
+
+def expand_square(square): # Na koi indeksi treba da se napravi toggle
+    neighbour_squares = []
+    x, y = square
+    for x, y in [(x, y), (x+1, y), (x-1, y), (x, y+1), (x, y-1)]:
+        if 0 <= x < N and 0 <= y < N:
+            neighbour_squares.append((x, y))
+    return neighbour_squares
+
+def expand_state(state):
+    new_states = []
+    for i in range(N):
+        for j in range(N):
+            new_matrix = [list(row) for row in state] # Convert each row to a list
+            square = (i, j) 
+            expanded_sq = expand_square(square) # Gi dobivame indeksite na koi treba da napravime toggle
+            for (x, y) in expanded_sq: # za da gi smenime vrednostite na state[x][y]
+                new_matrix[x][y]=toggle(state[x][y])
+            # Convert each row back to a tuple and then the entire matrix to a tuple of tuples
+            new_states.append(tuple(tuple(row) for row in new_matrix))
+    return new_states
+
+initial_m = (
+    (0, 0, 1, 0),
+    (0, 0, 1, 1),
+    (1, 1, 0, 0),
+    (0, 1, 0, 0),
+)
+
+goal_m = (
+    (0, 0, 0, 0),
+    (0, 0, 0, 0),
+    (0, 0, 0, 0),
+    (0, 0, 0, 0),
+)
+
+def search_path(starting_vertex, goal_vertex): # Patot do celta
+    if starting_vertex == goal_vertex:
+        return []
+    visited = {starting_vertex}
+    queue = deque([[starting_vertex]])  # deque (double-ended queue)
+    while queue: 
+        vertex_list = queue.popleft() 
+        vertex_to_expand = vertex_list[-1]
+        for neighbour in expand_state(vertex_to_expand):
+                if neighbour == goal_vertex:
+                    return vertex_list + [neighbour]
+                if neighbour not in visited:
+                    visited.add(neighbour)
+                    queue.append(vertex_list + [neighbour])
+# Running the search
+path = search_path(initial_m, goal_m)
+
+if path:
+    for step in path:
+        for row in step:
+            print(row)
+        print()  # Print a blank line for separation
+else:
+    print("No path found")
+
+
+
+
+
+
+
+# LAB 3 SO A*
+
+
+import heapq
+import copy
+from collections import deque
+N = 4
+def toggle(element):
+    if element == 1:
+        element = 0
+    else:
+        element = 1
+    return element
+
+def expand_square(square): # Na koi indeksi treba da se napravi toggle
+    neighbour_squares = []
+    x, y = square
+    for x, y in [(x, y), (x+1, y), (x-1, y), (x, y+1), (x, y-1)]:
+        if 0 <= x < N and 0 <= y < N:
+            neighbour_squares.append((x, y))
+    return neighbour_squares
+
+def expand_state(state):
+    new_states = []
+    for i in range(N):
+        for j in range(N):
+            new_matrix = [list(row) for row in state]
+            square = (i, j) 
+            expanded_sq = expand_square(square) # Gi dobivame indeksite na koi treba da napravime toggle
+            for (x, y) in expanded_sq: # za da gi smenime vrednostite na state[x][y]
+                new_matrix[x][y]=toggle(state[x][y])
+            new_states.append(tuple(tuple(row) for row in new_matrix))
+    return new_states
+initial_m = (
+    (0, 0, 1, 0),
+    (0, 0, 1, 1),
+    (1, 1, 0, 0),
+    (0, 1, 0, 0),
+)
+
+goal_m = (
+    (0, 0, 0, 0),
+    (0, 0, 0, 0),
+    (0, 0, 0, 0),
+    (0, 0, 0, 0),
+)
+
+
+
+
+
+
+# Heuristic function: Number of lights that are on, divided by 5
+def heuristic(board):
+    lights_on = sum(sum(row) for row in board)
+    return lights_on / 5
+# Od ilina e ovaa funcija
+
+
+def heuristic(state, goal):
+    return sum(1 for i in range(N) for j in range(N) if state[i][j] != goal[i][j])
+def search_path(starting_vertex, goal_vertex, heuristic_function, alpha=1):
+    if starting_vertex == goal_vertex:
+        return [], 0  # Return an empty path and zero cost if start is the goal
+
+    expanded = set()
+    queue = [((0, 0), [starting_vertex])]  # Priority queue with f-cost, g-cost, and path
+    heapq.heapify(queue)
+
+    while queue:
+        weight_tuple, vertex_list = heapq.heappop(queue)
+        current_a_star_weight, current_path_weight = weight_tuple
+        vertex_to_expand = vertex_list[-1]
+
+        # If we reach the goal, return the path and the total path cost
+        if vertex_to_expand == goal_vertex:
+            return vertex_list, current_path_weight  # Return the path and cost
+
+        # If the vertex has already been expanded, skip it
+        if vertex_to_expand in expanded:
+            continue
+
+        # Expand the current vertex
+        for neighbour in expand_state(vertex_to_expand):
+            if neighbour in expanded:
+                continue
+
+            # Compute the heuristic for the neighbour
+            heuristic = heuristic_function(neighbour, goal_vertex)
+            path_weight = current_path_weight + 1  # Assuming uniform cost of 1 for each move
+            a_star_weight = path_weight + alpha * heuristic
+
+            # Add the neighbour to the priority queue with the updated weights
+            heapq.heappush(queue, ((a_star_weight, path_weight), vertex_list + [neighbour]))
+
+        # Mark the current vertex as expanded
+        expanded.add(vertex_to_expand)
+
+    return None, None  # If no path is found
+
+
+# Running the search
+path, cost = search_path(initial_m, goal_m, heuristic)
+
+if path:
+    for step in path:  # path is a list of states (tuples or grids)
+        for row in step:  # each step is a grid (a list of rows)
+            print(row)  # print each row of the grid
+        print()  # Print a blank line for separation between states
+    print("Total cost:", cost)  # Print the total cost after printing the path
+else:
+    print("No path found")
+
+
+
