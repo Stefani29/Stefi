@@ -1,0 +1,157 @@
+# Zadacata so Farmerot, Volkot , Ovcata i Zelkata so BFS
+from collections import deque
+
+def toggle(element):
+    if element == 1:
+        element = 0
+    else:
+        element = 1
+    return element
+
+def is_valid(state):
+    farmer, wolf, sheep, cabbage = state
+    if wolf==sheep and farmer!=wolf: # Sami wolf i sheep
+        return False
+    if sheep==cabbage and farmer!=sheep: # Sami sheep i cabbage
+        return False
+    else:
+        return True
+    
+
+def expand_state(state):
+    new_states = []
+    f, w, s, c = state
+    for i in range(1, 4):
+        if state[0]==state[i]:# Uslov za dali moze da se prenese w, s ili c. Ako e tocno, moze da se prenese
+            new_state=state[:] # Default vrednosti
+            new_state[0] = toggle(state[0])  # Farmerot ja pominuva rekata
+            new_state[i] = toggle(state[i])  # W, s ili c ja preminuva rekata
+            # Proverka dali e validna ovaa sostojba
+            if is_valid(new_state):
+                new_states.append(new_state)
+
+    # New states kade farmerot sam ja pominuva rekata
+    if state[0] == state[0]:  
+        new_state = state[:] # Napravi kopija na state vo new_state
+        new_state[0] = toggle(state[0])  # Preminuva reka sam farmerot
+        if is_valid(new_state): # Proverka za dali e validna
+            new_states.append(new_state)
+    return new_states
+
+def search_path(initial_state, goal_state):
+    visited = {tuple(initial_state)}  # Convert initial state to tuple (immutable and hashable)
+    states_queue = deque([[initial_state]])  # Queue stores a path of states
+    while states_queue:
+        states_list = states_queue.popleft()  # Get the current path
+        state_to_expand = states_list[-1]  # The last state in the current path
+        
+        # Generate all possible next states
+        for next_state in expand_state(state_to_expand):
+            state_tuple = tuple(next_state)  # Convert next state to a tuple
+            if state_tuple not in visited:  # Check if this state has been visited
+                if next_state == goal_state:  # If goal state is reached, return the path
+                    return states_list + [next_state]
+                visited.add(state_tuple)  # Mark this state as visited
+                states_queue.append(states_list + [next_state])  # Add new state to the path queue
+                
+    return []  # If no path found
+# Define the initial state and goal state
+initial_state = [0, 0, 0, 0]  # Farmer, Wolf, Sheep, Cabbage all on the left side (0)
+goal_state = [1, 1, 1, 1]     # All the items should be on the right side (1)
+
+# Call the search_path function
+path = search_path(initial_state, goal_state)
+
+# Print the result (if a path exists)
+if path:
+    print("Path to the goal state:", path)
+else:
+    print("No valid path found.")
+
+
+
+
+
+# Zadacata so Farmerot, Volkot , Ovcata i Zelkata so A*
+#the heuristic will count how many characters are left on the river bank
+import heapq
+initial_state = (0, 0, 0, 0)
+goal_state = (1, 1, 1, 1)
+def is_valid(state):
+    farmer, wolf, lamb, cabbage = state
+
+    if farmer != wolf and lamb == wolf:
+        return False
+    if farme != lamb and lamb == cabbage:
+        return False
+
+    return True
+
+def is_goal(state):
+    if state == goal_state: #site ja preminaa rekata
+        return True
+
+def heuristic(state):
+    return state.count(0)
+
+def expand_state(state):
+    farmer, wolf, lamb, cabbage = state
+    possible_moves = []
+    
+    # Farmer can move alone, or with one of the other characters
+    # For each move, we manually toggle the character's position
+    possible_moves.append((1 - farmer, wolf, lamb, cabbage))  # Farmer moves alone
+    possible_moves.append((1 - farmer, 1 - wolf, lamb, cabbage))  # Farmer moves with wolf
+    possible_moves.append((1 - farmer, wolf, 1 - lamb, cabbage))  # Farmer moves with lamb
+    possible_moves.append((1 - farmer, wolf, lamb, 1 - cabbage))  # Farmer moves with cabbage
+    
+    # Filter valid moves
+    valid_moves = [move for move in possible_moves if is_valid(move)]
+    
+    return valid_moves
+
+# A* search implementation
+def a_star_search(initial_state, goal_state):
+    open_list = []
+    heapq.heappush(open_list, (heuristic(initial_state), 0, initial_state, []))  # (f, g, state, path)
+    
+    # Set to track visited states
+    visited = set()
+    visited.add(initial_state)
+    
+    while open_list:
+        # Get the state with the lowest f value
+        f, g, current_state, path = heapq.heappop(open_list)
+        
+        # If we reach the goal, return the path
+        if current_state == goal_state:
+            return path + [current_state]
+        
+        # Generate possible moves by expanding the state
+        possible_moves = expand_state(current_state)
+        
+        # Add each valid move to the open list
+        for move in possible_moves:
+            if move not in visited:
+                visited.add(move)
+                heapq.heappush(open_list, (g + 1 + heuristic(move), g + 1, move, path + [current_state]))
+
+    return None  # If no solution is found
+
+# Function to solve the problem and print the solution steps
+def solve_crossing_the_river():
+    # Predefined initial and goal states
+    initial_state = (0, 0, 0, 0)
+    goal_state = (1, 1, 1, 1)
+    
+    # Run A* search to find the solution
+    solution = a_star_search(initial_state, goal_state)
+    
+    if solution:
+        print("Solution path:")
+        for step in solution:
+            print(step)
+    else:
+        print("No solution found")
+
+
