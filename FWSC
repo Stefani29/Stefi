@@ -155,3 +155,70 @@ def solve_crossing_the_river():
         print("No solution found")
 
 
+
+
+
+
+
+
+
+
+
+
+
+def a_star_search(starting_vertex, goal_vertex, heuristic_function, alpha=1):
+    if starting_vertex == goal_vertex:
+        return [], 0  # If starting state is already the goal state, return path and cost
+    
+    expanded = set()
+    queue = [((0, 0), [starting_vertex])]  # Initialize the queue with the starting state
+    heapq.heapify(queue)
+    
+    while queue:
+        weight_tuple, vertex_list = heapq.heappop(queue)
+        current_a_star_weight, current_path_weight = weight_tuple
+        vertex_to_expand = vertex_list[-1]
+        
+        # Check if we have reached the goal
+        if vertex_to_expand == goal_vertex:
+            return vertex_list, current_path_weight
+        
+        if vertex_to_expand in expanded:
+            continue
+        
+        # Expand the current state
+        for next_state in expand_state(vertex_to_expand):
+            if tuple(next_state) in expanded:
+                continue
+            
+            # Calculate heuristic and path weight
+            heuristic = heuristic_function(next_state, goal_vertex)
+            path_weight = current_path_weight + 1  # Every move has a cost of 1
+            a_star_weight = path_weight + alpha * heuristic
+            
+            # Add the new state to the queue
+            heapq.heappush(queue, ((a_star_weight, path_weight), vertex_list + [next_state]))
+        
+        expanded.add(tuple(vertex_to_expand))
+    
+    return None, 0  # If no solution is found
+
+# Heuristic function: Count how many characters are on the initial side (0 side)
+def heuristic(state, goal_state):
+    return sum(1 for x in state if x == 0)
+
+# Define the initial state and goal state
+initial_state = [0, 0, 0, 0]  # Farmer, Wolf, Sheep, Cabbage all on the left side (0)
+goal_state = [1, 1, 1, 1]     # All the items should be on the right side (1)
+
+# Call the A* search function
+path, cost = a_star_search(initial_state, goal_state, heuristic)
+
+# Print the result (if a path exists)
+if path:
+    print("Path to the goal state:", path)
+    print("Total cost:", cost)
+else:
+    print("No valid path found.")
+
+
