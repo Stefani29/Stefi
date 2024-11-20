@@ -1,0 +1,176 @@
+class Graph():
+    def __init__(self):
+        self.graph_dict = {}
+    
+    def add_vertex(self, vertex): # Dodavanje na jazol
+        if vertex not in self.graph_dict:
+            self.graph_dict[vertex] = []
+    
+    def vertices(self): # Se vrakja lista od jazlite
+        return list(self.graph_dict.keys())
+    
+    def add_edge(self, edge, add_reversed=True): # Na toj jazol dodadi nov sosed vo recnikot
+        vertex1, vertex2 = edge
+        self.graph_dict[vertex1].append(vertex2)
+        if add_reversed:
+            self.graph_dict[vertex2].append(vertex1)
+    
+    def edges(self): # Vrati gi Vrskite na site jazlite
+        edges = []
+        for vertex in self.graph_dict:
+            for neighbour in self.graph_dict[vertex]:
+                edges.append((vertex, neighbour))
+        return edges
+    
+    def neighbours(self, vertex): # Sosedite na eden jazol
+        return self.graph_dict[vertex]
+    
+    def remove_vertex(self, vertex_to_remove): # Ostranuvanje na jazol
+        del self.graph_dict[vertex_to_remove]
+        for vertex in self.vertices():
+            if vertex_to_remove in self.graph_dict[vertex]:
+                self.graph_dict[vertex].remove(vertex_to_remove)
+
+    def remove_edge(self, edge_to_remove, remove_reversed=True): # Ostranuvanje na vrska
+        vertex1, vertex2 = edge_to_remove
+        if vertex2 in self.graph_dict[vertex1]:
+            self.graph_dict[vertex1].remove(vertex2)
+        if remove_reversed:
+            if vertex1 in self.graph_dict[vertex2]:
+                self.graph_dict[vertex2].remove(vertex1)
+
+    def isolated_vertices(self):
+        isolated_vertices = []
+        for vertex in self.graph_dict:
+            if not self.graph_dict[vertex]:
+                isolated_vertices.append(vertex)
+        return isolated_vertices
+
+
+
+
+from collections import deque
+
+def breadth_first_search_find_path(graph, starting_vertex, goal_vertex: # Patot do celta
+    if starting_vertex == goal_vertex:
+        return []
+    visited = {starting_vertex}
+    queue = deque([[starting_vertex]])  # deque (double-ended queue)
+    while queue: 
+        vertex_list = queue.popleft() 
+        vertex_to_expand = vertex_list[-1]
+        for neighbour in graph.neighbours(vertex_to_expand):
+                if neighbour == goal_vertex:
+                    return vertex_list + [neighbour]
+                visited.add(neighbour)
+                queue.append(vertex_list + [neighbour])
+def search_path(initial_state, goal_state):
+    visited = {tuple(initial_state)}  # Convert initial state to tuple (immutable and hashable)
+    states_queue = deque([[initial_state]])  # Queue stores a path of states
+    while states_queue:
+        states_list = states_queue.popleft()  # Get the current path
+        state_to_expand = states_list[-1]  # The last state in the current path
+        
+        # Generate all possible next states
+        for next_state in expand_state(state_to_expand):
+            state_tuple = tuple(next_state)  # Convert next state to a tuple
+            if state_tuple not in visited:  # Check if this state has been visited
+                if next_state == goal_state:  # If goal state is reached, return the path
+                    return states_list + [next_state]
+                visited.add(state_tuple)  # Mark this state as visited
+                states_queue.append(states_list + [next_state])  # Add new state to the path queue
+                
+    return []  # If no path found
+
+
+def depth_first_search_find_path(graph, starting_vertex, goal_vertex):
+    if starting_vertex == goal_vertex:
+        return []
+    visited = {starting_vertex}
+    queue = deque([[starting_vertex]])
+    while queue:
+        vertex_list = queue.popleft()
+        vertex_to_expand = vertex_list[-1]
+        for neighbour in graph.neighbours(vertex_to_expand):
+                if neighbour == goal_vertex:
+                    return vertex_list + [neighbour]
+                visited.add(neighbour)
+                queue.appendleft(vertex_list + [neighbour])
+
+
+class WeightedGraph:
+    def __init__(self):
+        self.graph_dict = {}
+    
+    def add_vertex(self, vertex):
+        if vertex not in self.graph_dict:
+            self.graph_dict[vertex] = {}
+    
+    def vertices(self):
+        return list(self.graph_dict.keys())
+    
+    def add_edge(self, edge, add_reversed=True):
+        vertex1, vertex2, weight = edge
+        self.graph_dict[vertex1][vertex2] = weight
+        if add_reversed:
+            self.graph_dict[vertex2][vertex1] = weight
+    
+    def edges(self):
+        edges = []
+        for vertex in self.graph_dict:
+            for neighbour, weight in self.graph_dict[vertex].items():
+                edges.append((vertex, neighbour, weight))
+        return edges
+    
+    def neighbours(self, vertex):
+        return list(self.graph_dict[vertex].items())
+
+
+import heapq
+def uniform_cost_search(graph, starting_vertex, goal_vertex, verbose=False):
+    if starting_vertex == goal_vertex:
+        return
+    expanded = set() # Sets in Python are unordered collections of unique elements. 
+                     # They do not allow duplicate values and provide efficient membership testing, addition, and removal of elements.
+    queue = [(0, [starting_vertex])] # Ja pamtime cenata na patot i patot kako sme stignale do celta
+    heapq.heapify(queue) # After calling heapq.heapify(), the list will be rearranged such that the smallest element is at the root (index 0).
+    while queue:
+        weight, vertex_list = heapq.heappop(queue) # Removes and returns the smallest element from the heap (the root).
+        vertex_to_expand = vertex_list[-1]
+        if vertex_to_expand == goal_vertex:
+            return weight, vertex_list
+        if vertex_to_expand in expanded:
+            continue
+        for neighbour, new_weight in graph.neighbours(vertex_to_expand):
+            if neighbour in expanded:
+                # if verbose:
+                    #print('{} е веќе разгранет'.format(neighbour))
+            else:
+                heapq.heappush(queue, (weight + new_weight, vertex_list + [neighbour]))
+        expanded.add(vertex_to_expand)
+
+
+import heapq
+def a_star_search(graph, starting_vertex, goal_vertex, heuristic_function, alpha=1, verbose=False):
+    if starting_vertex == goal_vertex:
+        return
+    expanded = set()
+    queue = [((0, 0), [starting_vertex])]
+    heapq.heapify(queue)
+    while queue:
+        weight_tuple, vertex_list = heapq.heappop(queue)
+        current_a_star_weight, current_path_weight = weight_tuple
+        vertex_to_expand = vertex_list[-1]
+        if vertex_to_expand == goal_vertex:
+            return current_path_weight, vertex_list
+        if vertex_to_expand in expanded:
+            continue
+        for neighbour, new_weight in graph.neighbours(vertex_to_expand):
+            if neighbour in expanded:
+                continue
+            else:
+                heuristic = heuristic_function(neighbour, goal_vertex)
+                path_weight = current_path_weight + new_weight
+                a_star_weight = path_weight + alpha * heuristic
+                heapq.heappush(queue, ((a_star_weight, path_weight), vertex_list + [neighbour]))
+        expanded.add(vertex_to_expand)
