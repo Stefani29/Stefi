@@ -1,0 +1,64 @@
+4. Types of Heuristics Based on Problem
+
+    Simple Heuristics: These are easy to calculate but may not be very precise. Common examples include:
+        Manhattan Distance: Common in grid-based puzzles where movement is restricted to horizontal and vertical directions (like the 8-puzzle or 15-puzzle). It sums the horizontal and vertical distances from the current state to the goal state.
+        Euclidean Distance: For problems where movement is allowed in any direction (diagonal movement, for example), this calculates the straight-line distance between two points.
+
+    Domain-Specific Heuristics: These heuristics take advantage of the specific structure of the problem.
+        In the 8-puzzle, you might use:
+            Misplaced Tiles: Count the number of tiles that are out of place.
+            Manhattan Distance: Calculate the sum of the distances each tile is from its goal position.
+        In pathfinding (e.g., a robot navigating a grid), you might use:
+            Straight-Line Distance (Euclidean) for the heuristic in open space where movement isn't constrained to grid directions.
+            Chebyshev Distance if diagonal movement is allowed.
+
+    Combination of Heuristics: Sometimes, combining multiple heuristics can provide a better estimate. The key is that the combined heuristic must still be admissible.
+        For instance, in the 8-puzzle, you could combine both the Manhattan Distance and the Misplaced Tiles heuristic, using the maximum or sum of both.
+
+5. Common Heuristics for Different Problem Types
+
+    *Pathfinding (like A on a grid)**:
+        Manhattan Distance (if moving only horizontally/vertically).
+        Euclidean Distance (if diagonal movement is allowed).
+        Chebyshev Distance (for movement in any direction with equal cost in all directions).
+    8-Puzzle, Sliding Tile Puzzles:
+        Misplaced Tiles (number of tiles out of place).
+        Manhattan Distance (sum of the distances of all tiles from their correct positions).
+    Travelling Salesman Problem (TSP):
+        Minimum Spanning Tree (MST): Compute the cost of a minimum spanning tree for the remaining cities.
+    Sudoku, Constraint Satisfaction Problems (CSP):
+        Number of Conflicts: Count how many numbers violate the Sudoku rules.
+
+6. Creating Heuristics for New Problems
+
+If you're working on a new problem, follow these steps:
+
+    Define State Representation: Clearly define how you will represent the problem state (a grid, a list of positions, etc.).
+    Understand the Goal State: What is the "goal" you're trying to reach? How is it structured?
+    Estimate Cost of Transition: What does it take to move from one state to another? Is the cost uniform, or does it vary?
+    Make an Intuitive Guess: What might be a simple yet effective way to estimate the remaining cost? Think of the simplest metrics that describe how "far" you are from the goal.
+
+After you have a candidate heuristic:
+
+    Check for Admissibility: Does it overestimate the cost? If yes, adjust it so it doesn't.
+    Check for Consistency: Does it satisfy the triangle inequality? This can be tricky to verify, but you can test it by checking pairs of states and their neighbors.
+
+
+
+
+Summary of Heuristic Functions:
+
+    Pathfinding Heuristics:
+        Manhattan Distance: For grid-based movement (horizontal/vertical).
+        Euclidean Distance: For diagonal movement (open space).
+        Chebyshev Distance: For grid-based movement with equal diagonal and straight-line cost.
+
+    8-Puzzle Heuristics:
+        Misplaced Tiles: Counts the number of tiles not in the goal position.
+        Manhattan Distance: Sum of the Manhattan distances of all tiles to their goal positions.
+
+    TSP Heuristic:
+        Minimum Spanning Tree (MST): Provides a lower bound on the TSP cost by calculating the MST of unvisited cities.
+
+    Domain-Specific Heuristics:
+        Sudoku Conflicts: Counts the number of conflicts (duplicate numbers) in rows, columns, and subgrids.
