@@ -74,6 +74,7 @@ else:
 
 # Zadacata so Farmerot, Volkot , Ovcata i Zelkata so A*
 #the heuristic will count how many characters are left on the river bank
+
 import heapq
 initial_state = (0, 0, 0, 0)
 goal_state = (1, 1, 1, 1)
