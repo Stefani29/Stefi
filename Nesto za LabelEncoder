@@ -1,0 +1,30 @@
+from sklearn.preprocessing import LabelEncoder
+
+# Initialize the LabelEncoder
+encoder = LabelEncoder()
+
+# Fit and transform the data
+encoded_labels = encoder.fit_transform(original_labels)
+
+# Inverse transform (convert back to original labels)
+decoded_labels = encoder.inverse_transform(encoded_labels)
+
+
+from sklearn.preprocessing import LabelEncoder
+
+# Sample data
+labels = ['dog', 'cat', 'fish', 'dog', 'cat', 'fish']
+
+# Initialize the encoder
+encoder = LabelEncoder()
+
+# Fit and transform the labels
+encoded_labels = encoder.fit_transform(labels)
+print("Encoded labels:", encoded_labels)  # Output: [1 0 2 1 0 2]
+
+# Inverse transform
+decoded_labels = encoder.inverse_transform(encoded_labels)
+print("Decoded labels:", decoded_labels)  # Output: ['dog' 'cat' 'fish' 'dog' 'cat' 'fish']
+
+
+
