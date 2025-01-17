@@ -28,3 +28,89 @@ print("Decoded labels:", decoded_labels)  # Output: ['dog' 'cat' 'fish' 'dog' 'c
 
 
 
+
+
+Објаснете на кој начин ни помага функцијата за ентропија кај дрвата за одлучување.
+Entropijata se koristi za odreduvanje na informaciska pridobivka
+se odreduva koja podelba ni dava najgolema informaciska pridobivka, t.e. koja podelba ke e optimalna, i vo sledniot cekor drvoto se deli po taa optimalna podelba.
+Informaciskata pridobivka e razlika pomegu entropijata posle podelbata i entropijata na podatocnoto mnozestvo pred podelbata.
+
+
+Зошто библиотеките за машинско учење кои нудат имплементација на алгоритам за дрва за одлучување, користат gini index наместо ентропија?
+Зошто да користите Gini Impurity?
+Брзина :
+Gini е пресметковно поедноставен и побрз за пресметување, што може да биде поволно за големи збирки на податоци или кога обуката треба да биде ефикасна.
+Ефективност :
+Емпириските студии сугерираат дека во многу практични случаи, Џини и ентропија доведуваат до слични поделби. Така, користењето на Gini често дава слични резултати, но со намалени пресметковни трошоци.
+Стандарден избор :
+Во scikit-learn, Gini нечистотијата е стандарден критериум за класификатори на стеблата на одлуки (како DecisionTreeClassifier) бидејќи нуди добар баланс на брзина и точност.
+Кога да се користи ентропија?
+Кога давате приоритет на добивката од информации пред пресметковната ефикасност.
+Кога интерпретабилноста во однос на теоријата на информации (на пр. разбирање на поделбите во смисла на намалена несигурност) е важна.
+Во пракса, можете да ги испробате и двете и да ги оцените перформансите користејќи вкрстена валидација за да видите кој работи подобро за вашата специфична база на податоци и проблем.
+4o
+
+
+Исцртај го дрвото на играта, до длабочина 3? Кој признак најдобро го дели множеството при првата поделба?
+
+Дали постапуваме правилно ако за нашите податоци имплементираме многу различни алгоритми, на пример над 20, и го избереме најдобриот? Дали сигурно сме го избрале најдобриот или има нешто труло во оваа постапка? Објасни.
+
+Без користење на калкулатор, дискутирајте на кој начин ќе процените колку состојби треба да се разгранат за да се истражи целото дрво на играта.
+Ако сакаме да го разграниме целото дрво, тогаш не треба да користиме алфа бета поткаструвањe, значи ќе ја користeме функцијата minimax во која не фигурираат алфа и бета.
+Во функцијата ќе поставиме бројач кој ќе брои колку пати ќе се повикува таа функција. Бидејќи секоја состојба од дрвото се повикува еднаш, значи бројот на повикувања = бројот на состојби кои се разгрануваат
+
+Пресметајте колку точно состојби се разгрануваат за да се истражи целото дрво на играта?
+
+Што е алфа-бета поткастрување? Зошто користиме алфа-бета поткастрување во оваа игра?
+
+Алфа-бета поткаструвањето е метода која се користи со цел да се минимизира бројот на состојби кои се испитуваат. Ова овозможува minimax алгоритмот да се извршува во пократко време, но притоа повторно секогаш да го дава точниот резултат (поткаструвањето ги елиминира гранките кои сигурно нема да се крајното решение).
+Алфа-бета поткаструвањето се користи во играта со цел компјутерот побрзо да може да го пресмета наредниот чекор што играчот треба да го направи. (поточно што побрзо да изврши minimax)
+
+
+Покажете дека користењето на постапката за алфа-бета поткастрување се исплати во оваа игра. На кој начин подобро ќе се покаже: (1) преку времето потребно за извршување на алгоритмите или (2) преку броење на разгранетите јазли?
+И преку времето и преку бројачот, очигледна е разликата што алфа бета поткаструвањето ја прави. Бројачот од околу 900.000 сега е околу 11.000, а времето од 11.5 секунди сега е од редот на милисекунди.
+
+Целото дрво брзо се истражува на компјутер од 2022 година. Во продолжение разгледуваме случај кога овој алгоритам се поставува на компјутер кој нема доволно пресметковна моќ и мемориски ресурси за да го пребара целото дрво во логично време за еден потег. Ова е случај кога таблата наместо 3х3 ќе биде 6х6. Стандардната постапка во овој случај е да се ограничи длабочината до која пребарува алгоритамот, па тогаш да се проценува исходот од играта преку функција за евристика.
+Објаснете на кој начин ни помага функцијата за ентропија кај дрвата за одлучување.
+Entropijata se koristi za odreduvanje na informaciska pridobivka se odreduva koja podelba ni dava najgolema informaciska pridobivka, t.e. koja podelba ke e optimalna, i vo sledniot cekor drvoto se deli po taa optimalna podelba.
+Informaciskata pridobivka e razlika pomegu entropijata posle podelbata i entropijata na podatocnoto mnozestvo pred podelbata.
+
+Зошто за алгоритамот ID3 за градење на дрво се вели дека е алчен алгоритам?
+ID3 algoritmot e alcen bidejki drvoto za odlucuvanje go deli na alcen nacin
+toa znaci deka so sekoja iteracija, algoritmot alcno ja bara optimalnata podelba (onaa koja ke dovede do najgolema informaciska pridobivka)
+
+ZA LABEL ENCODER
+from sklearn.preprocessing import LabelEncoder
+
+# Initialize the LabelEncoder
+encoder = LabelEncoder()
+
+# Fit and transform the data
+encoded_labels = encoder.fit_transform(original_labels)
+
+# Inverse transform (convert back to original labels)
+decoded_labels = encoder.inverse_transform(encoded_labels)
+
+
+from sklearn.preprocessing import LabelEncoder
+
+# Sample data
+labels = ['dog', 'cat', 'fish', 'dog', 'cat', 'fish']
+
+# Initialize the encoder
+encoder = LabelEncoder()
+
+# Fit and transform the labels
+encoded_labels = encoder.fit_transform(labels)
+print("Encoded labels:", encoded_labels)  # Output: [1 0 2 1 0 2]
+
+# Inverse transform
+decoded_labels = encoder.inverse_transform(encoded_labels)
+print("Decoded labels:", decoded_labels)  # Output: ['dog' 'cat' 'fish' 'dog' 'cat' 'fish']
+
+
+
+
+
+First_split_feature = clf.feature_names_in_[clf.tree_feature[0]]
+print(f”The first feature split is: ’ (first_split_feature)”)
